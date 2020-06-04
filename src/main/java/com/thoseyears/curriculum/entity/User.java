@@ -18,7 +18,7 @@ import lombok.experimental.Accessors;
 @TableName(value="user")//默认将类名作为表名
 public class User {
 
-    @TableId(value = "id",type= IdType.AUTO)
+    @TableId(value = "id",type= IdType.INPUT)
     private String id;
 
     @TableField(value = "username")
