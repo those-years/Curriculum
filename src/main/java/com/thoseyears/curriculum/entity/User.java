@@ -18,12 +18,14 @@ import lombok.experimental.Accessors;
 @TableName(value="user")//默认将类名作为表名
 public class User {
 
-    @TableId(value = "id",type= IdType.INPUT)
-    private String id;
-
+    @TableId(value = "userid",type= IdType.INPUT)
+    private String userid;
     @TableField(value = "username")
-    private String name;
-    private String age;
-
+    private String username;
+    @TableField(value = "password")
+    private String password;
+    private String phone;
+    private String email;
+    private String content;
 
 }

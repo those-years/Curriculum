@@ -48,14 +48,14 @@ public class TestUserDAO{
     @Test
     public void testSave(){
         User entity = new User();
-        entity.setId("117583010120").setName("李").setAge("23");
+        entity.setUserid("117583010120").setUsername("李").setPassword("123456").setPhone("13286986783").setContent("广西民大").setEmail("1392178770@qq.com");
         userDAO.insert(entity);
     }
     //更新
     @Test
     public void testUpdate(){
         User user = userDAO.selectById("117583010120");
-        user.setName("小李李");
+        user.setUsername("小李李");
         userDAO.updateById(user);
     }
     //删除
