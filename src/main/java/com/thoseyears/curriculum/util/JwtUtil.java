@@ -11,6 +11,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 public class JwtUtil {
@@ -34,11 +35,15 @@ public class JwtUtil {
             e.printStackTrace();
         }
     }
-    /**
-     * 验证TOKEN
-     *
-     * @return
-     */
+    /*
+    * @author: thoseyears
+    * @methodsName: checkToken
+    * @description: 验证TOKEN是否过期
+    * @param: String Token
+    * @return: boolean
+    * @Time: 2020/06/11
+    * @throws:
+    */
     public static boolean checkToken(String Token){
         boolean flag = false;
         //获取当前时间
@@ -53,12 +58,56 @@ public class JwtUtil {
                 //获取token的用户信息
                 JSONObject js =  JSONObject.fromObject(claims.getSubject());
                 flag = true;
+            }else{
+                cleanExpireSession();
             }
         }catch (Exception e){
             System.out.println("验证TOKEN出错");
             e.printStackTrace();
         }
         return flag;
+    }
+    public static void cleanExpireSession() {
+        long nowMillis = System.currentTimeMillis();//生成JWT的时间
+        Date now = new Date(nowMillis);
+        for (Iterator<Map.Entry<String, String>> it = userTokens.entrySet().iterator(); it.hasNext();) {
+            try {
+                Map.Entry<String, String> item = it.next();
+                String  Token = userTokens.get(item.getKey());
+                Claims claims = null;
+                claims = JwtUtil.parseJWT(Token);
+                Date expTime = claims.getExpiration();//获取TOKEN过期时间 -1与1
+                int timeFlag = expTime.compareTo(now);
+                if (timeFlag!=1) {
+                    it.remove();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        }
+    }
+    /*
+     * @author: thoseyears
+     * @methodsName: getUser
+     * @description: 解析TOKEN获取当前用户信息
+     * @param: String Token
+     * @return: boolean
+     * @Time: 2020/06/11
+     * @throws:
+     */
+    public static JSONObject getUser(String Token){
+        JSONObject js = null;
+        try{
+            Claims claims = JwtUtil.parseJWT(Token);
+            //获取token的用户信息
+            js =  JSONObject.fromObject(claims.getSubject());
+            return js;
+        }catch (Exception e){
+            System.out.println("验证TOKEN出错");
+            e.printStackTrace();
+        }
+        return js;
     }
     /**
      * 由字符串生成加密key

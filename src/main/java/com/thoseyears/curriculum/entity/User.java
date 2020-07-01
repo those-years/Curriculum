@@ -26,6 +26,10 @@ public class User {
     private String password;
     private String phone;
     private String email;
+    @TableField(value = "sex")
+    private String sex;
     private String content;
+    private String imgurl;
+    private String type;
 
 }

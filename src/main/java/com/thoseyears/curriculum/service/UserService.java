@@ -9,5 +9,6 @@ public interface UserService {
     public String checkUser(String userid,String password) throws Exception;
     public User findlUserByid(String userid);
     public String addUser(User user);
+    public User updateUser(String userid,User user);
     public boolean deleteUserByid(String userid);
 }
