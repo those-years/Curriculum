@@ -62,8 +62,8 @@ public class JwtUtil {
                 cleanExpireSession();
             }
         }catch (Exception e){
-            System.out.println("验证TOKEN出错");
-            e.printStackTrace();
+            return false;
+
         }
         return flag;
     }

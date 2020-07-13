@@ -1,5 +1,6 @@
 package com.thoseyears.curriculum.service.serviceimpl;
 
+import com.thoseyears.curriculum.entity.Competition;
 import net.sf.json.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.thoseyears.curriculum.dao.UserDAO;
@@ -37,9 +38,8 @@ public class UserServiceImpl implements UserService {
     public String checkUser(String userid, String password)  {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         Map<String,Object> map = new HashMap<>(); //设置查询条件
-        map.put("username",userid); //设置查询参数
         map.put("password",password); //设置查询参数
-        queryWrapper.allEq(map);
+        queryWrapper.allEq(map).and(qw->qw.eq("userid", userid).or().eq("username",userid));
         User user =userDAO.selectOne(queryWrapper);
         String jwt="";
         if(user!=null){
@@ -76,13 +76,48 @@ public class UserServiceImpl implements UserService {
      */
     @Override
     public String addUser(User user) {
-
-        while(userDAO.selectById(user.getUserid())!=null){
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        Map<String,Object> map = new HashMap<>(); //设置查询条件
+        map.put("username",user.getUsername()); //设置查询参数
+        queryWrapper.allEq(map);
+        if(userDAO.selectOne(queryWrapper)!=null){
             return null;
         }
+        String userid = RandomIdFactory.getUserId();
+        while(userDAO.selectById(userid)!=null){
+            userid = RandomIdFactory.getUserId();
+        }
+        user.setUserid(userid);
         user.setType("0");
         userDAO.insert(user);
         return user.getUserid();
+    }
+    public void addmsg(){
+
+//        User thoseyears = new User();
+//        String thoseyearsname = "那些年";
+//        thoseyears.setPassword("a123456").setEmail("1392178770@qq.com").setContent("民大").
+//                setPhone("13286986783").setType("0").setSex("0");
+//        for(int i=0;i<100;i++){
+//            String userid = RandomIdFactory.getUserId();
+//            while(userDAO.selectById(userid)!=null){
+//                userid = RandomIdFactory.getUserId();
+//            }
+//            thoseyears.setUserid(userid).setUsername(thoseyearsname+i);
+//            userDAO.insert(thoseyears);
+//        }
+//        User libobo = new User();
+//        String liboboname = "李波波";
+//        thoseyears.setPassword("a123456").setEmail("1392178770@qq.com").setContent("民大").
+//                setPhone("13286986783").setType("0").setSex("0");
+//        for(int i=0;i<100;i++){
+//            String userid = RandomIdFactory.getUserId();
+//            while(userDAO.selectById(userid)!=null){
+//                userid = RandomIdFactory.getUserId();
+//            }
+//            libobo.setUserid(userid).setUsername(liboboname+i);
+//            userDAO.insert(libobo);
+//        }
     }
 
     @Override
@@ -95,6 +130,18 @@ public class UserServiceImpl implements UserService {
             User u =  userDAO.selectById(userid);
             user.setPassword( u.getPassword());
         }
+        userDAO.updateById(user);
+        return user;
+    }
+
+    @Override
+    public User updateUserByUsername(String usernmae, User user) {
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        Map<String,Object> map = new HashMap<>(); //设置查询条件
+        map.put("username",usernmae); //设置查询参数
+        queryWrapper.allEq(map);
+        User u = userDAO.selectOne(queryWrapper);
+        u.setEmail(user.getEmail()).setUsername(usernmae).setPassword(user.getPassword());
         userDAO.updateById(user);
         return user;
     }

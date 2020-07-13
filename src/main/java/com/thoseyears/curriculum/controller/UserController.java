@@ -104,10 +104,8 @@ public class UserController {
         User user = new User();
         Map<String,String> map = new HashMap<>();
         List<Map> resultMap = new ArrayList<>();
-        String gender = "男";
-        if(sex.equals("1")){
-            gender = "女";
-        }
+        String gender = sex;
+
         user.setUserid(userid).setSex(gender).setEmail(email).setContent(content).setPhone(phone).setPassword(password).setUsername(username).setImgurl(imgurl);
         String msg = usi.addUser(user);//插入用户返回用户id
         JSONObject result = new JSONObject();
@@ -122,9 +120,11 @@ public class UserController {
         String jwt = usi.checkUser(msg,password);
         map.put("TOKEN",jwt);
         result.put("msg", "true");
+        result.put("userid", msg);
         result.put("code", "0");
         result.put("count","1");
         result.put("data", resultMap);
+        System.out.println(result.toJSONString());
         return  result.toJSONString();
     }
 
@@ -142,6 +142,20 @@ public class UserController {
         result.put("data", user);
         return  result.toJSONString();
     }
+    @GetMapping("/findUserPwd/{username}")
+    public String modifyUserPwdByUsername(@PathVariable(name = "username") String username,@RequestParam(name = "email") String email,@RequestParam(name = "password") String password){
+        // http://localhost:8080/Curriculum/User/registerUser/蒙虚坤?password=123456&phone=13286983783&email=1392178770@qq.com&content=民大&imgurl=images/1.jpg
+        User user = new User();
+        user.setPassword(password).setEmail(email);
+        user = usi.updateUserByUsername(username,user);
+        JSONObject result = new JSONObject();
+        result.put("msg", "true");
+        result.put("code", "0");
+        result.put("count","1");
+        result.put("data", user);
+        return  result.toJSONString();
+    }
+
     @GetMapping("/modifyUserMsg/{userid}")
     public String modifyUserMsg(@RequestParam(name="sex")String sex,@PathVariable(name = "userid") String userid,
                                @RequestParam(name = "username") String username,
@@ -159,4 +173,6 @@ public class UserController {
         result.put("data", user);
         return  result.toJSONString();
     }
+
+
 }
